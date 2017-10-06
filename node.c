@@ -24,6 +24,18 @@ node create_node(int aid, int rid){
   
 }
 
+void print_list(node head){
+  if(head != NULL){
+    printf("");
+    print_list(head->next);
+  }
+  else{
+    printf("\n");
+  }
+
+}
+
+
 void enqueue(node head, node insert){
   node temp, current;
   if(head == NULL){
