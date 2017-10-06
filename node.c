@@ -1,38 +1,38 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct linkedlist{
+typedef struct linkedlist{
   int account_id;
   int request_id;
   //type
   struct linkedlist *next;
-};
+}*node;
 
-typedef struct linkedlist *node;
+//typedef struct linkedlist *node;
 
 node create_node(int aid, int rid){
   node temp;
-  temp = (node)malloc(sizeof(node));
+  temp = (node)malloc(sizeof(struct linkedlist));
   if(temp = NULL){
-    printf("Cannot Create Node\n");
     exit(0);
   }
+  // printf("account id is %d\n", temp.account_id);
+  printf("setting node params\n");
   temp->account_id = aid;
+  printf("setting account it\n");
   temp->request_id = rid;
   temp->next = NULL;
-  return temp;
-  
+  return temp; 
 }
 
 void print_list(node head){
   if(head != NULL){
-    printf("");
+    printf("[account:%d, request:%d]->", head->account_id, head->request_id);
     print_list(head->next);
   }
   else{
     printf("\n");
   }
-
 }
 
 
