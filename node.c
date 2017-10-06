@@ -1,60 +1,37 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct linkedlist{
-  int account_id;
-  int request_id;
-  //type
+struct linkedlist{
+  int data;
   struct linkedlist *next;
-}*node;
+};
 
-//typedef struct linkedlist *node;
+typedef struct linkedlist *node;
 
-node create_node(int aid, int rid){
+node createNode(int val){
   node temp;
+  printf("temp is node\n");
   temp = (node)malloc(sizeof(struct linkedlist));
-  if(temp = NULL){
-    exit(0);
-  }
-  // printf("account id is %d\n", temp.account_id);
-  printf("setting node params\n");
-  temp->account_id = aid;
-  printf("setting account it\n");
-  temp->request_id = rid;
   temp->next = NULL;
+  temp->value = val;
+  printf("node temp isnt null\n");
+
   return temp; 
 }
 
-void print_list(node head){
-  if(head != NULL){
-    printf("[account:%d, request:%d]->", head->account_id, head->request_id);
-    print_list(head->next);
-  }
-  else{
-    printf("\n");
-  }
-}
-
-
-void enqueue(node head, node insert){
-  node temp, current;
+node addNode(node head, int value){
+  node temp, p;
+  temp = createNode(value);
+  //temp->data = value;
   if(head == NULL){
-    head = insert;
+    head = temp;
   }
   else{
-    current = head;
-    while(current->next != NULL){
-      current = current->next;
+    p = head;
+    while(p->next != NULL){
+      p = p->next;
     }
-    current->next = insert;
+    p->next = temp;
   }
-}
-
-
-node dequeue(node head){
-  node car;
-  car = head;
-  head = head->next;
   return head;
 }
-

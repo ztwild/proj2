@@ -3,9 +3,9 @@
 
 int main(){
 
-  node n1 = create_node(1,1);
-  node n2 = create_node(2,2);
-  node n3 = create_node(3,3);
-
+  node n1;
+  printf("init n1\n");
+  n1 = addNode(NULL, 1);
+  printf("node added\n");
   return 0;
 }
