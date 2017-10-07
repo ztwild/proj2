@@ -3,8 +3,6 @@
 #include <ctype.h>
 #include <string.h>
 
-#define MAX_LEN 100
-#define DEL " \n\t\r"
 
 int isnumber(char *str){
   int i, b = 1;
@@ -17,23 +15,15 @@ int isnumber(char *str){
   return b;
 }
 
-int initserver(int argc, char **argv){
-  printf("checking for server init..\n");
-  if(argc != 4){
-    printf("Number of arguments invalid, exiting\n");
-    exit(0);
-  }
-  else if(!isnumber(argv[1]) || !isnumber(argv[2])){
-    printf("Second or third arguments are not numeric, exiting\n");
-    exit(0);
-  };
-  printf("server initialized\n");
-  return 1;
+int equals(char *str1, char *str2){
+  return strcmp(str1, str2) == 0;
 }
 
-char *read_line(){
-  char line[MAX_LEN], *str;
-  fgets(line, MAX_LEN, stdin);
-  str = strtok(line, DEL);
+char *lowercase(char *str){
+  int i = 0;
+  while(str[i] != '\0'){
+    str[i] = tolower(str[i]);
+    i++;
+  }
   return str;
 }

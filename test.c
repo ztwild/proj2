@@ -1,11 +1,11 @@
+#include "run.c"
 
-#include "node.c"
 
-int main(){
+int main(int argc, char **argv){
 
-  node n1;
-  printf("init n1\n");
-  n1 = addNode(NULL, 1);
-  printf("node added\n");
+  initserver(argc, argv);
+
+  run(argc, argv);
+
   return 0;
 }

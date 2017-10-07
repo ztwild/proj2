@@ -1,28 +1,30 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct linkedlist{
-  int data;
-  struct linkedlist *next;
-};
+#define TRANS "trans"
+#define CHECK "check"
 
-typedef struct linkedlist *node;
+typedef struct node{
+  int account_id;
+  int request_id;
+  struct node *next;
+}node;
 
-node createNode(int val){
-  node temp;
-  printf("temp is node\n");
-  temp = (node)malloc(sizeof(struct linkedlist));
+node *head;
+
+node *create_node(int aid, int rid){
+  node *temp;
+  temp = (node*)malloc(sizeof(node));
+  temp->account_id = aid;
+  temp->request_id = rid;
   temp->next = NULL;
-  temp->value = val;
-  printf("node temp isnt null\n");
 
   return temp; 
 }
 
-node addNode(node head, int value){
-  node temp, p;
-  temp = createNode(value);
-  //temp->data = value;
+void enqueue(int aid, int rid){
+  node *temp, *p;
+  temp = create_node(aid, rid);
   if(head == NULL){
     head = temp;
   }
@@ -33,5 +35,26 @@ node addNode(node head, int value){
     }
     p->next = temp;
   }
-  return head;
+}
+
+node *dequeue(){
+  node *temp;
+  temp = head;
+  head = head->next;
+  return temp;
+}
+
+void print_list(){
+  node *temp;
+  temp = head;
+  if(head == NULL){
+    printf("NULL\n");
+  }
+  else{
+    while(temp->next != NULL){
+      printf("[account:%d, request:%d]->", temp->account_id, temp->request_id);
+      temp = temp->next;
+    }
+    printf("[account:%d, request:%d]\n", temp->account_id, temp->request_id);
+  }
 }
