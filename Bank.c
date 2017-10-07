@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 
+
 int *BANK_accounts;	//Array for storing account values
 
 /*
@@ -13,6 +14,7 @@ int *BANK_accounts;	//Array for storing account values
  */
 int initialize_accounts( int n )
 {
+	printf("Initializing Accounts\n");
 	BANK_accounts = (int *) malloc(sizeof(int) * n);
 	if(BANK_accounts == NULL) return 0;
 
@@ -31,7 +33,7 @@ int initialize_accounts( int n )
  */
 int read_account( int ID )
 {
-	usleep( 100000 );
+	// usleep( 100000 );
 	return BANK_accounts[ID - 1];
 }
 
@@ -42,6 +44,9 @@ int read_account( int ID )
  */
 void write_account( int ID, int value)
 {
-	usleep( 100000 );
+	int s = sizeof(BANK_accounts);
+  printf("Number of accounts: %d\n", s);
+	//usleep( 100000 );
 	BANK_accounts[ID - 1] = value;
+	printf("wrote into account\n");
 }

@@ -9,7 +9,7 @@ int isnumber(char *str){
   i = (str[0] == '+' || str[0] == '-') && strlen(str) > 1 ; //if first char is '+' OR '-', ignore
   
   for(i; i < strlen(str); i++){
-    printf("index %d: isdigit %d\n", i, isdigit(str[i]) > 0);
+    //printf("index %d: isdigit %d\n", i, isdigit(str[i]) > 0);
     b &= isdigit(str[i]) > 0;
   }
   return b;

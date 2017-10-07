@@ -1,30 +1,34 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define TRANS "trans"
-#define CHECK "check"
+#define TRANS 0
+#define CHECK 1
 
 typedef struct node{
   int account_id;
   int request_id;
+  int request_type;
+  int amount;
   struct node *next;
 }node;
 
 node *head;
 
-node *create_node(int aid, int rid){
+node *create_node(int aid, int rid, int amount, int type){
   node *temp;
   temp = (node*)malloc(sizeof(node));
   temp->account_id = aid;
   temp->request_id = rid;
+  temp->request_type = type;
+  temp->amount = amount;
   temp->next = NULL;
 
   return temp; 
 }
 
-void enqueue(int aid, int rid){
+void enqueue(int aid, int rid, int amount, int type){
   node *temp, *p;
-  temp = create_node(aid, rid);
+  temp = create_node(aid, rid, amount, type);
   if(head == NULL){
     head = temp;
   }
@@ -57,4 +61,8 @@ void print_list(){
     }
     printf("[account:%d, request:%d]\n", temp->account_id, temp->request_id);
   }
+}
+
+void print_node(node *n){
+  printf("[account:%d, request:%d]\n", n->account_id, n->request_id);
 }
