@@ -39,7 +39,7 @@ void run(int argc, char **argv){
     line = read_line();
     args = split_line(line);
     
-    if(equals(cmd, "exit")){
+    if(equals(args[0], "exit")){
       fclose(file);
       printf("Exiting");
       exit(0);
@@ -48,8 +48,8 @@ void run(int argc, char **argv){
     //   printf("Transaction\n");
     // }
     else if(validate(args)){
-      char bal = balance_check(args);
-      fprintf(file, "%s\n", response);
+      request_input(args, count);
+      printf("ID %d\n", count);
     }
     else{
       printf("Not Valid Input\n");
