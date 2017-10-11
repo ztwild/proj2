@@ -1,8 +1,8 @@
-///**
+/**
 #include <time.h>
 #include <sys/time.h>
 #include <pthread.h>
-//**/
+**/
 #include "utils.c"
 #include "Bank.c"
 #include "node.c"
@@ -37,13 +37,13 @@ int validate(char **args){
   return 0
 }
 
-///**
+/**
 void *worker(void *);
 
 pthread_mutex_t mutex;
 pthread_cond_t  worker_cv;
 pthread_cond_t  bank_cv;
-//**/
+**/
 
 void request_input(char **args, int count){
   char *cmd = lowercase(args[0]);
@@ -69,7 +69,7 @@ void process_trans(int id, int amount){
   
 }
 
-
+/**
 void *worker(void *arg){
   pthread_mutex_lock(&mutex);
   while(head == NULL)
@@ -88,6 +88,6 @@ void *worker(void *arg){
   //Record end time
   pthread_cond_brodcast(); //to workers
   pthread_mutex_unlock(&mutex);
-  
-  
+   
 }
+**/
