@@ -1,3 +1,8 @@
+///**
+#include <time.h>
+#include <sys/time.h>
+#include <pthread.h>
+//**/
 #include "utils.c"
 #include "Bank.c"
 #include "node.c"
@@ -32,6 +37,14 @@ int validate(char **args){
   return 0
 }
 
+///**
+void *worker(void *);
+
+pthread_mutex_t mutex;
+pthread_cond_t  worker_cv;
+pthread_cond_t  bank_cv;
+//**/
+
 void request_input(char **args, int count){
   char *cmd = lowercase(args[0]);
   int x, index = 1, id = atoi(args[1]);
@@ -48,3 +61,33 @@ void request_input(char **args, int count){
   }
 }
 
+int process_check(int id){
+  return read_account(id);
+}
+
+void process_trans(int id, int amount){
+  
+}
+
+
+void *worker(void *arg){
+  pthread_mutex_lock(&mutex);
+  while(head == NULL)
+    pthread_cond_wait( , &mutex); //for other workers
+  ///get start time
+  node *req = dequeue();
+  if(req->request_type == CHECK){
+    int amount = read_account(req->account_id);
+    int id = req->request_id;
+    
+    fprintf(file, "%d BAL %d TIME %d.%d06d\n", id, amount, time);
+  }
+  
+  
+  free(req);
+  //Record end time
+  pthread_cond_brodcast(); //to workers
+  pthread_mutex_unlock(&mutex);
+  
+  
+}

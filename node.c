@@ -1,3 +1,5 @@
+#include <time.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -9,6 +11,7 @@ typedef struct node{
   int request_id;
   int request_type;
   int amount;
+  struct timeval start;
   struct node *next;
 }node;
 
@@ -22,7 +25,7 @@ node *create_node(int aid, int rid, int amount, int type){
   temp->request_type = type;
   temp->amount = amount;
   temp->next = NULL;
-
+  gettimeofday(&temp->start, NULL);
   return temp; 
 }
 

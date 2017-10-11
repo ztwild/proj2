@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+
 #include "line.c"
 #include "worker.c"
 
@@ -18,6 +19,7 @@ int initserver(int argc, char **argv){
   
   return 1;
 }
+
 
 void run(int argc, char **argv){
   char *line, **args;
@@ -44,9 +46,6 @@ void run(int argc, char **argv){
       printf("Exiting");
       exit(0);
     }
-    // else if(){
-    //   printf("Transaction\n");
-    // }
     else if(validate(args)){
       request_input(args, count);
       printf("ID %d\n", count);
@@ -61,3 +60,5 @@ void run(int argc, char **argv){
   }
 
 }
+
+
