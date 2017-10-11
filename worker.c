@@ -9,7 +9,7 @@ void init_file(char *file_name){
 }
 
 int validate(char **args){
-  int index = 1, val = 1, loop = 0;
+  int index = 1, val = 1, loop = 1;
   int nopair, onepair, pair;
   char *cmd = lowercase(args[0]);
   if(equals(cmd, "check")){
@@ -18,16 +18,18 @@ int validate(char **args){
   }
   else if(equals(cmd, "trans")){
     //Revise the validation for 'trans'
-    char *a = args[index++], *b = args[index++];
-    while(loop < 11){
-      val &= !(loop++ >= 10);
-      val &= !(a != NULL && b == NULL);
-      val |= !(!isnumber(a) || !isnumber(b));
+    int a, b, res;
+    while(index < 11){
+      a = isnumber(args[2(index - 1)]);
+      b = isnumber(args[2(index)]);
+      val = !(a || b) || (a && b);
+      val &= val && index < 11;
+      index++;
+      
     }
-    printf("tans will be executed: %d\n", val);
     return val;
   }
-  return 0;
+  return 0
 }
 
 void request_input(char **args, int count){
