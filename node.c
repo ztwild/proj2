@@ -16,6 +16,7 @@ typedef struct node{
 }node;
 
 node *head;
+int num_of_requests = 0;
 
 node *create_node(int aid, int rid, int amount, int type){
   node *temp;
@@ -42,6 +43,7 @@ void enqueue(int aid, int rid, int amount, int type){
     }
     p->next = temp;
   }
+  num_of_requests = rid;
 }
 
 node *dequeue(){
@@ -58,11 +60,15 @@ void print_list(){
     printf("NULL\n");
   }
   else{
+    int a = temp->account_id;
+    int r = temp->request_id;
     while(temp->next != NULL){
-      printf("[account:%d, request:%d]->", temp->account_id, temp->request_id);
+      printf("[account:%d, request:%d]->", a, r);
       temp = temp->next;
+      a = temp->account_id;
+      r = temp->request_id;
     }
-    printf("[account:%d, request:%d]\n", temp->account_id, temp->request_id);
+    printf("[account:%d, request:%d]\n", a, r);
   }
 }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
+//#include <BaseTsd.h>
+//typedef SSIZE_T ssize_t;
 
 #define DEL " \n\t\r"
 #define READ_SIZE 1024

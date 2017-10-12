@@ -5,6 +5,9 @@
 
 
 int isnumber(char *str){
+  if(str == NULL){
+    return 0;
+  }
   int i, b = 1;
   i = (str[0] == '+' || str[0] == '-') && strlen(str) > 1 ; //if first char is '+' OR '-', ignore
   

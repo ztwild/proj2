@@ -1,8 +1,3 @@
-/**
-#include <time.h>
-#include <sys/time.h>
-#include <pthread.h>
-**/
 #include "utils.c"
 #include "Bank.c"
 #include "node.c"
@@ -22,28 +17,24 @@ int validate(char **args){
     return val;
   }
   else if(equals(cmd, "trans")){
-    //Revise the validation for 'trans'
-    int a, b, res;
-    while(index < 11){
-      a = isnumber(args[2(index - 1)]);
-      b = isnumber(args[2(index)]);
-      val = !(a || b) || (a && b);
-      val &= val && index < 11;
-      index++;
+    char *a, *b;
+    while(1){
+      a = args[2 * index - 1];
+      b = args[2 * index];
       
+      if(a == NULL && b == NULL){
+        return index > 1;
+      }
+      else if(isnumber(a) ^ isnumber(b) || index > 10){
+        return 0;
+      }
+      index++;
     }
-    return val;
+    
+    return 1;
   }
-  return 0
+  return 0;
 }
-
-/**
-void *worker(void *);
-
-pthread_mutex_t mutex;
-pthread_cond_t  worker_cv;
-pthread_cond_t  bank_cv;
-**/
 
 void request_input(char **args, int count){
   char *cmd = lowercase(args[0]);
@@ -61,33 +52,24 @@ void request_input(char **args, int count){
   }
 }
 
-int process_check(int id){
-  return read_account(id);
-}
-
-void process_trans(int id, int amount){
+void process_next(){
+  flockfile(file);
+  node *n = dequeue();
   
-}
-
-/**
-void *worker(void *arg){
-  pthread_mutex_lock(&mutex);
-  while(head == NULL)
-    pthread_cond_wait( , &mutex); //for other workers
-  ///get start time
-  node *req = dequeue();
-  if(req->request_type == CHECK){
-    int amount = read_account(req->account_id);
-    int id = req->request_id;
-    
-    fprintf(file, "%d BAL %d TIME %d.%d06d\n", id, amount, time);
+  if(n->request_type == CHECK){
+    int amount = read_account(n->account_id);
+    fprintf(file, "%d BAL %d TIME ---\n", n->request_id, amount);
   }
-  
-  
-  free(req);
-  //Record end time
-  pthread_cond_brodcast(); //to workers
-  pthread_mutex_unlock(&mutex);
-   
+  else{
+    write_account(n->account_id, n->amount);
+    //printf("run.c: about to write to file\n");
+    int success = fprintf(file, "%d BAL %d TIME ---\n", n->request_id, n->amount);
+    printf("wrote to file: %d\n", success);
+  }
+  free(n);
+  funlockfile(file);
 }
-**/
+
+
+
+

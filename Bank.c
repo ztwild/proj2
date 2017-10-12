@@ -14,15 +14,15 @@ int *BANK_accounts;	//Array for storing account values
  */
 int initialize_accounts( int n )
 {
-	BANK_accounts = (int *) malloc(sizeof(int) * n);
-	if(BANK_accounts == NULL) return 0;
+  BANK_accounts = (int *) malloc(sizeof(int) * n);
+  if(BANK_accounts == NULL) return 0;
 
-	int i;
-	for( i = 0; i < n; i++)
-	{
-		BANK_accounts[i] = 0;
-	}
-	return 1;
+  int i;
+  for( i = 0; i < n; i++)
+  {
+	  BANK_accounts[i] = 0;
+  }
+  return 1;
 }
 
 /*
@@ -32,8 +32,8 @@ int initialize_accounts( int n )
  */
 int read_account( int ID )
 {
-	// usleep( 100000 );
-	return BANK_accounts[ID - 1];
+  // usleep( 100000 );
+  return BANK_accounts[ID - 1];
 }
 
 /*
@@ -43,6 +43,6 @@ int read_account( int ID )
  */
 void write_account( int ID, int value)
 {
-	//usleep( 100000 );
-	BANK_accounts[ID - 1] = value;
+  //usleep( 100000 );
+  BANK_accounts[ID - 1] = value;
 }
