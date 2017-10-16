@@ -11,7 +11,7 @@ typedef struct node{
   int request_id;
   int request_type;
   int amount;
-  struct timeval start;
+  //struct timeval start;
   struct node *next;
 }node;
 
@@ -19,14 +19,12 @@ node *head;
 int num_of_requests = 0;
 
 node *create_node(int aid, int rid, int amount, int type){
-  node *temp;
-  temp = (node*)malloc(sizeof(node));
+  node *temp = (node*)malloc(sizeof(node));
   temp->account_id = aid;
   temp->request_id = rid;
   temp->request_type = type;
   temp->amount = amount;
-  temp->next = NULL;
-  gettimeofday(&temp->start, NULL);
+  //gettimeofday(&temp->start, NULL);
   return temp; 
 }
 
@@ -53,6 +51,16 @@ node *dequeue(){
   return temp;
 }
 
+int count_list(){
+  node *temp = head;
+  int count = 0;
+  while(temp != NULL){
+    count ++;
+    temp = temp->next;
+  }
+  return count;
+}
+
 void print_list(){
   node *temp;
   temp = head;
@@ -63,12 +71,13 @@ void print_list(){
     int a = temp->account_id;
     int r = temp->request_id;
     while(temp->next != NULL){
-      printf("[account:%d, request:%d]->", a, r);
+      printf("[account:%d, request:%d]\n", a, r);
       temp = temp->next;
       a = temp->account_id;
       r = temp->request_id;
     }
     printf("[account:%d, request:%d]\n", a, r);
+    printf("------------------------\n");
   }
 }
 

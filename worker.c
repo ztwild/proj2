@@ -25,7 +25,10 @@ int validate(char **args){
       if(a == NULL && b == NULL){
         return index > 1;
       }
-      else if(isnumber(a) ^ isnumber(b) || index > 10){
+      else if(isnumber(a) ^ isnumber(b) && a != NULL && b != NULL){
+        return 0;
+      }
+      else if(index > 10){
         return 0;
       }
       index++;
@@ -37,7 +40,9 @@ int validate(char **args){
 }
 
 void request_input(char **args, int count){
-  char *cmd = lowercase(args[0]);
+  //printf("lowercase...");
+  //char *cmd = lowercase(args[0]);
+  char *cmd = args[0];
   int x, index = 1, id = atoi(args[1]);
   if(equals(cmd, "check")){
     enqueue(id, count, 0, CHECK);

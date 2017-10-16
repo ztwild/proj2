@@ -15,8 +15,9 @@ int initserver(int argc, char **argv){
 } 
 
 
-int main(int argc, char **argv){
 
+int main(int argc, char **argv){
+  printf("v 2.0\n");
   initserver(argc, argv);
   
   run(argc, argv);
