@@ -84,3 +84,24 @@ void print_list(){
 void print_node(node *n){
   printf("[account:%d, request:%d]\n", n->account_id, n->request_id);
 }
+
+void print_list2(){
+  node *temp;
+  temp = head;
+  if(head == NULL){
+    printf("NULL\n");
+  }
+  else{
+    int a = temp->account_id;
+    int r = temp->amount;
+    while(temp->next != NULL){
+      printf("[account:%d, amount:%d]\n", a, r);
+      temp = temp->next;
+      a = temp->account_id;
+      r = temp->amount;
+    }
+    printf("[account:%d, amount:%d]\n", a, r);
+    printf("------------------------\n");
+  }
+}
+

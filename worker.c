@@ -43,16 +43,18 @@ void request_input(char **args, int count){
   //printf("lowercase...");
   //char *cmd = lowercase(args[0]);
   char *cmd = args[0];
-  int x, index = 1, id = atoi(args[1]);
+  int index = 1, id = atoi(args[1]);
   if(equals(cmd, "check")){
     enqueue(id, count, 0, CHECK);
   }
   else if(equals(cmd, "trans")){
     char *a = args[index++], *b = args[index++];
-    id = atoi(a);
-    int tran = atoi(b);
-    for(x = 0; x < 10; x++){
+    while(isnumber(a) && isnumber(b)){
+      id = atoi(a);
+      int tran = atoi(b);
       enqueue(id, count, tran, TRANS);
+      a = args[index++];
+      b = args[index++];
     }
   }
 }

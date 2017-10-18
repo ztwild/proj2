@@ -15,19 +15,7 @@ pthread_mutex_t mutex;
 pthread_cond_t  request_cv;
 pthread_cond_t  process_cv;
 
-typedef struct temp{
-  char **args;
-  int count;
-}temp;
-
-temp *create_temp(char **args, int count){
-  temp *t = (temp*)malloc(sizeof(temp));
-  t->args = args;
-  t->count = count;
-  return t;
-}
-
-void *request(temp *t);
+void *request(char **args, int count);
 void *process();
 
 void run(int argc, char **argv){
@@ -39,7 +27,7 @@ void run(int argc, char **argv){
   num_workers = atoi(argv[1]);
   num_accounts = atoi(argv[2]);
   file_name = argv[3];
-  pthread_t process_tid[num_workers];
+  //pthread_t process_tid[num_workers];
   
   //// Initialize Settings ////
   initialize_accounts(num_accounts);
@@ -47,7 +35,7 @@ void run(int argc, char **argv){
   
   pthread_mutex_init(&mutex, NULL);
   pthread_cond_init(&request_cv, NULL);
-  pthread_cond_init(&process_cv, NULL);
+  //pthread_cond_init(&process_cv, NULL);
   
   /**
   int i;
@@ -74,29 +62,30 @@ void run(int argc, char **argv){
     }
     else if(validate(args)){
       request_count++;
-      temp *t = create_temp(args, request_count);
       pthread_t request_tid;
-      pthread_create(&request_tid, NULL, request(t), NULL);
+      pthread_create(&request_tid, NULL, request(args, request_count), NULL);
+      //pthread_join(request_tid, NULL);
       printf("ID %d\n", request_count);
     }
     else{
       printf("Invalid Input\n");
     }
-     
+    
     free(line);
     free(args);
+    printf("Freed lines and args\n");
   }
 }
 
 
-void *request(temp *t){
+void *request(char **args, int count){
   pthread_mutex_lock(&mutex);
   while(0) //Waits till its number to queue
     pthread_cond_wait(&request_cv, &mutex);
   
-  //request_input(t->args, t->count);
+  //request_input(args, count);
   pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
-  pthread_cond_broadcast(&process_cv);  //Then the process
+  //pthread_cond_broadcast(&process_cv);  //Then the process
   pthread_mutex_unlock(&mutex);
 
   printf("request submitted\n");
