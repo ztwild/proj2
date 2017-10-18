@@ -1,5 +1,5 @@
-#include <time.h>
-#include <sys/time.h>
+//#include <time.h>
+//#include <sys/time.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -31,6 +31,7 @@ node *create_node(int aid, int rid, int amount, int type){
 void enqueue(int aid, int rid, int amount, int type){
   node *temp, *p;
   temp = create_node(aid, rid, amount, type);
+  temp->next = NULL;
   if(head == NULL){
     head = temp;
   }
@@ -41,7 +42,7 @@ void enqueue(int aid, int rid, int amount, int type){
     }
     p->next = temp;
   }
-  num_of_requests = rid;
+  //num_of_requests = rid;
 }
 
 node *dequeue(){
@@ -77,7 +78,6 @@ void print_list(){
       r = temp->request_id;
     }
     printf("[account:%d, request:%d]\n", a, r);
-    printf("------------------------\n");
   }
 }
 

@@ -40,11 +40,10 @@ int validate(char **args){
 }
 
 void request_input(char **args, int count){
-  //printf("lowercase...");
-  //char *cmd = lowercase(args[0]);
   char *cmd = args[0];
   int index = 1, id = atoi(args[1]);
   if(equals(cmd, "check")){
+    id = atoi(args[1]);
     enqueue(id, count, 0, CHECK);
   }
   else if(equals(cmd, "trans")){
@@ -60,7 +59,7 @@ void request_input(char **args, int count){
 }
 
 void process_next(){
-  flockfile(file);
+  //flockfile(file);
   node *n = dequeue();
   
   if(n->request_type == CHECK){
@@ -74,7 +73,7 @@ void process_next(){
     printf("wrote to file: %d\n", success);
   }
   free(n);
-  funlockfile(file);
+  //funlockfile(file);
 }
 
 
