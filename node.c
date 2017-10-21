@@ -70,9 +70,9 @@ int get_request_type(){
   return head == NULL ? 0 : head->request_type;
 }
 
-int request_count(int i){
-  int j = 0;
+int request_count(){
   node *n = head;
+  int j = 0, i = n->request_id;
   while(n != NULL && n->request_id == i){
     j++;
     n = n->next;

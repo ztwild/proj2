@@ -1,5 +1,6 @@
 #include "utils.c"
 #include "Bank.c"
+#include "account.c"
 #include "node.c"
 
 ///  File  ///
@@ -35,7 +36,7 @@ void set_bank_size(int size){
   bank_size = size;
 }
 
-int validate(char **args){
+int validate(char **args){ ///Validates if the user input is valid
   int index = 1, val = 1;
   char *cmd = lowercase(args[0]);
   if(equals(cmd, "check")){
@@ -74,19 +75,18 @@ int validate(char **args){
 }
 
 
-void process_next(){
-  node *n;
+char *process_next(node *n){  ///Dequeues the next list of nodes with same request id 
+  char *str = malloc(sizeof(char)* 100);
   int ac, am, r;
   struct timeval end;
   
-  if(get_request_type() == CHECK){
-    n = dequeue();
+  if(n->request_type == CHECK){
     ac = n->account_id;
     r = n->request_id;
     am = n->amount;
     am = read_account(ac);
     gettimeofday(&end, NULL);
-    fprintf(file, "%d BAL %d TIME %d.%06d %d.%06d\n", r, am,
+    sprintf(str, "%d BAL %d TIME %d.%06d %d.%06d\n", r, am,
       n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
     free(n);
   }
@@ -95,10 +95,9 @@ void process_next(){
     int *tran_list = malloc(sizeof(int) * 10);
     int x = -1, loop = 1, valid = 1, index = 0;
     int size = bank_size;
-    r = get_request_id();
+    r = n->request_type;
     
-    while(loop){
-      n = dequeue();
+    while(n != NULL){
       valid &= n->account_id > 0 && n->account_id <= size;
       
       id_list[index] = n->account_id;
@@ -110,7 +109,9 @@ void process_next(){
       x = valid || x > -1 ? x : index;
       loop = r == get_request_id();
       index++;
-      free(n);
+      node *temp = n;
+      n = n->next;
+      free(temp);
     }
     
     if(valid){
@@ -119,20 +120,20 @@ void process_next(){
       }
       gettimeofday(&end, NULL);
       //fprintf(file, "(%d) ", index); 
-      fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
+      sprintf(str, "%d OK TIME %d.%06d %d.%06d\n", r, 
       //fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
         n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
     }
     else{
       ac = id_list[x];
       gettimeofday(&end, NULL);
-      fprintf(file, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
+      sprintf(str, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
         n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
     }
     free(id_list);
     free(tran_list);
   }
-  
+  return str;
 }
 
 
