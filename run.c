@@ -144,33 +144,35 @@ void *process(void* arg){  //Process/worker threads function
       pthread_cond_wait(&process_cv, &mutex);
     inprocess++;
     
-    int i, x = request_count();
+    int i, length = request_count();
     int *account_ids = malloc(sizeof(int)*x);
     node *n = NULL;
-    for(i = 0; i < x; i++){
+    for(i = 0; i < length; i++){
       node *temp = dequeue();
       temp->next = n;
       n = temp;
       account_ids[i] = n->account_id;
       free(temp);
     }
+    int *priority = get_request_priority();
+    set_request_priority(account_ids, length, n->request_id);
     
     pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
     pthread_cond_broadcast(&process_cv);  //Then the process
   
     inprocess--;
     pthread_mutex_unlock(&mutex);
-    printf("%d got list of request queued\n", n->request_id);
+    //printf("%d got list of request queued\n", n->request_id);
     
     ///Accounts
-    lock_accounts(account_ids, x);
+    lock_accounts(account_ids, length);
     while(request_ready != n->request_id)
-      account_waiting(account_ids, x);
+      account_waiting(account_ids, length);
     
     char *str = process_next(n);
     
     request_ready++;
-    unlock_accounts(account_ids, x);
+    unlock_accounts(account_ids, length);
     free(account_ids);
     printf("%d finished with accounts\n", n->request_id);
     
