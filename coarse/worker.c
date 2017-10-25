@@ -96,9 +96,10 @@ void process_next(){
     int x = -1, loop = 1, valid = 1, index = 0;
     int size = bank_size;
     r = get_request_id();
-    
+    n = dequeue();
+    struct timeval start = n->start;
+
     while(loop){
-      n = dequeue();
       valid &= n->account_id > 0 && n->account_id <= size;
       
       id_list[index] = n->account_id;
@@ -111,6 +112,7 @@ void process_next(){
       loop = r == get_request_id();
       index++;
       free(n);
+      n = dequeue();
     }
     
     if(valid){
@@ -121,13 +123,13 @@ void process_next(){
       //fprintf(file, "(%d) ", index); 
       fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
       //fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
-        n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
     }
     else{
       ac = id_list[x];
       gettimeofday(&end, NULL);
       fprintf(file, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
-        n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
     }
     free(id_list);
     free(tran_list);

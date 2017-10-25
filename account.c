@@ -8,11 +8,10 @@ typedef struct account{
   int request;
 }account;
 
+int size, *request_priority;
 account **account_list;
 pthread_cond_t account_cv;
-int size;
 
-int *request_priority;
 
 account *create_account(){
   account *a = malloc(sizeof(account));
@@ -35,10 +34,16 @@ void create_account_list(int n){
   
 }
 
-int *get_request_priority(){
+int *get_request_priority(int *accounts, int n){
   int i, *list = malloc(sizeof(int)*size);
+  int j = 0;
   for(i = 0; i < size; i++){
-    list[i] = request_priority[i];
+    if(j < n && accounts[j] == i+1){
+      list[j] = request_priority[i];
+      j++;
+    }else{
+      list[i] = 0;
+    }
   }
   return list;
 }
@@ -47,22 +52,21 @@ int *get_request_priority(){
 void set_request_priority(int *list, int n, int count){
   int i, id;
   for(i = 0; i < n; i++){
-    id = list[i];
+    id = list[i] - 1;
     request_priority[id] = count;
   }
 }
 
-int isrequest_finished(int *list, int n, int count){
-  int i;
-  for(i = 0; i < n; i++){
-    int r = account_list[i]->request;
-    
-  }
-  return 0;
-}
 
-void set_finished_priority(int *list){
-  
+pthread_mutex_t isrequest_finished(int *priority){
+  int i;
+  for(i = 0; i < size; i++){
+    int r = account_list[i]->request;
+    if(r > 0 && priority[i] != r){
+      return account_list[i]->mutex;
+    }
+  }
+  return NULL;
 }
 
 /// Locking and Unlocking

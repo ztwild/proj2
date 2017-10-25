@@ -78,16 +78,19 @@ int validate(char **args){ ///Validates if the user input is valid
 char *process_next(node *n){  ///Dequeues the next list of nodes with same request id 
   char *str = malloc(sizeof(char)* 100);
   int ac, am, r;
-  struct timeval end;
+  struct timeval end, start = n->start;
   
   if(n->request_type == CHECK){
     ac = n->account_id;
     r = n->request_id;
     am = n->amount;
-    am = read_account(ac);
+    //am = read_account(ac);
+    am = account_list[ac - 1]->value;
     gettimeofday(&end, NULL);
     sprintf(str, "%d BAL %d TIME %d.%06d %d.%06d\n", r, am,
-      n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+      start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
+    // sprintf(str, "%d BAL %d TIME %d.%06d\n", r, am,
+    //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
     free(n);
   }
   else{
@@ -101,13 +104,15 @@ char *process_next(node *n){  ///Dequeues the next list of nodes with same reque
       valid &= n->account_id > 0 && n->account_id <= size;
       
       id_list[index] = n->account_id;
-      if(valid){
-        tran_list[index] = read_account(n->account_id) + n->amount;
+      if(n->account_id > 0 && n->account_id <= size){
+        tran_list[index] = account_list[n->account_id - 1]->value + n->amount;
+        account_list[n->account_id - 1]->request = n->request_id;
+        //tran_list[index] = read_account(n->account_id) + n->amount;
         valid &= tran_list[index] >= 0;
       }
       
       x = valid || x > -1 ? x : index;
-      loop = r == get_request_id();
+      loop = n->next != NULL;
       index++;
       node *temp = n;
       n = n->next;
@@ -122,13 +127,17 @@ char *process_next(node *n){  ///Dequeues the next list of nodes with same reque
       //fprintf(file, "(%d) ", index); 
       sprintf(str, "%d OK TIME %d.%06d %d.%06d\n", r, 
       //fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
-        n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
+      // sprintf(str, "%d OK TIME %d.%06d\n", r, 
+      //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
     }
     else{
       ac = id_list[x];
       gettimeofday(&end, NULL);
       sprintf(str, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
-        n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
+      // sprintf(str, "%d ISF %d TIME %d.%06d\n", r, ac, 
+      //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
     }
     free(id_list);
     free(tran_list);

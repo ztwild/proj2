@@ -145,7 +145,7 @@ void *process(void* arg){  //Process/worker threads function
     inprocess++;
     
     int i, length = request_count();
-    int *account_ids = malloc(sizeof(int)*x);
+    int *account_ids = malloc(sizeof(int)*x); //the ids of the accounts to process
     node *n = NULL;
     for(i = 0; i < length; i++){
       node *temp = dequeue();
@@ -154,8 +154,9 @@ void *process(void* arg){  //Process/worker threads function
       account_ids[i] = n->account_id;
       free(temp);
     }
-    int *priority = get_request_priority();
+    int *priority = get_request_priority(account_ids); //List of requests that need to be finished first
     set_request_priority(account_ids, length, n->request_id);
+    free(account_ids);
     
     pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
     pthread_cond_broadcast(&process_cv);  //Then the process
@@ -166,11 +167,16 @@ void *process(void* arg){  //Process/worker threads function
     
     ///Accounts
     lock_accounts(account_ids, length);
-    while(request_ready != n->request_id)
-      account_waiting(account_ids, length);
+    
+    pthread_mutex_t m = isrequest_finished(priority);
+    while(m != NULL){
+      pthread_cond_wait(&account_cv, &m);
+      m = isrequest_finished(priority);
+    }
     
     char *str = process_next(n);
-    
+    free(priority);
+
     request_ready++;
     unlock_accounts(account_ids, length);
     free(account_ids);
