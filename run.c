@@ -11,6 +11,7 @@
 #include "line.c"
 #include "worker.c"
 
+
 pthread_mutex_t mutex;
 pthread_cond_t  request_cv;
 pthread_cond_t  process_cv;
@@ -56,8 +57,8 @@ void run(int argc, char **argv){
     line = read_line();
     args = split_line(line);
 
-    
     if(equals(args[0], "exit")){
+      flockfile(file);
       int success = fprintf(file, "End of Simulation");
       fclose(file);
       exit(0);
@@ -89,7 +90,7 @@ void run(int argc, char **argv){
         pthread_create(&request_tid, NULL, (void*)&request, (void*)w);
       }
       printf("ID %d\n", request_count);
-      usleep(50); // for testing, so it doesn't print the worker threads after 
+      usleep(200); // for testing, so it doesn't print the worker threads after 
     }
     else{
       printf("Invalid Input\n");
@@ -129,14 +130,14 @@ void *request(void *input){  //Main thread creates new thread to queue next requ
   
   inprocess--;
   pthread_mutex_unlock(&mutex);
-  printf("request submitted\n");
+  //printf("request submitted\n");
   return ;
 }
 
 
 void *process(void* arg){  //Process/worker threads function
   
-  ///Request queue
+//////////  Request queue  //////////
   int num = *((int*)arg);
   while(1){
     pthread_mutex_lock(&mutex);
@@ -145,17 +146,21 @@ void *process(void* arg){  //Process/worker threads function
     inprocess++;
     
     int i, length = request_count();
-    int *account_ids = malloc(sizeof(int)*x); //the ids of the accounts to process
+    int *account_ids = malloc(sizeof(int)*length); //the ids of the accounts to process
     node *n = NULL;
     for(i = 0; i < length; i++){
       node *temp = dequeue();
       temp->next = n;
       n = temp;
       account_ids[i] = n->account_id;
-      free(temp);
     }
-    int *priority = get_request_priority(account_ids); //List of requests that need to be finished first
+    
+      //List of requests that need to be finished first
+    int *priority = get_request_priority(account_ids, length);
     set_request_priority(account_ids, length, n->request_id);
+    
+    //print_account_ids(priority, bank_size);
+    //print_account_ids(request_priority, bank_size);
     free(account_ids);
     
     pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
@@ -163,33 +168,38 @@ void *process(void* arg){  //Process/worker threads function
   
     inprocess--;
     pthread_mutex_unlock(&mutex);
-    //printf("%d got list of request queued\n", n->request_id);
+ 
     
-    ///Accounts
+//////////  Accounts  //////////
+    
     lock_accounts(account_ids, length);
-    
-    pthread_mutex_t m = isrequest_finished(priority);
-    while(m != NULL){
-      pthread_cond_wait(&account_cv, &m);
-      m = isrequest_finished(priority);
+    //printf("(%d) waiting for accounts\n", num);
+    i = isrequest_finished(priority);
+    //printf("is request finished? i = %d\n", i);
+    while(i >= 0){
+      pthread_mutex_t mutex_account = account_list[i]->mutex;
+      pthread_cond_wait(&account_cv, &mutex_account);
+      i = isrequest_finished(priority);
+      //printf("is request finished? i = %d\n", i);
     }
     
     char *str = process_next(n);
     free(priority);
 
     request_ready++;
+    print_account_requests(bank_size);
     unlock_accounts(account_ids, length);
     free(account_ids);
-    printf("%d finished with accounts\n", n->request_id);
+    //printf("(%d) processed accounts\n", num);
     
-    ///Write to File
+//////////  Write to File  //////////    
+    //printf("(%d) waiting for file\n", num);
     flockfile(file);
-    while(ftrylockfile(file));
     
     fprintf(file, "%s", str);
     free(str);
     funlockfile(file);
-    printf("%d wrote to file\n", n->request_id);
+    //printf("(%d) printed to file\n", num);
   }
   
   return ;

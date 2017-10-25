@@ -36,14 +36,13 @@ void create_account_list(int n){
 
 int *get_request_priority(int *accounts, int n){
   int i, *list = malloc(sizeof(int)*size);
-  int j = 0;
+  
   for(i = 0; i < size; i++){
-    if(j < n && accounts[j] == i+1){
-      list[j] = request_priority[i];
-      j++;
-    }else{
-      list[i] = 0;
-    }
+    list[i] = 0;
+  }
+  for(i = 0; i < n; i++){
+    int id = accounts[i];
+    list[id - 1] = request_priority[id - 1];
   }
   return list;
 }
@@ -52,21 +51,21 @@ int *get_request_priority(int *accounts, int n){
 void set_request_priority(int *list, int n, int count){
   int i, id;
   for(i = 0; i < n; i++){
-    id = list[i] - 1;
-    request_priority[id] = count;
+    id = list[i];
+    request_priority[id-1] = count;
   }
 }
 
 
-pthread_mutex_t isrequest_finished(int *priority){
+int isrequest_finished(int *priority){
   int i;
   for(i = 0; i < size; i++){
     int r = account_list[i]->request;
     if(r > 0 && priority[i] != r){
-      return account_list[i]->mutex;
+      return i;
     }
   }
-  return NULL;
+  return -1;
 }
 
 /// Locking and Unlocking

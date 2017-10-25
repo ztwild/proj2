@@ -1,31 +1,30 @@
-#include "worker.c"
-
-void print_args(char **args, char *name){
-  int i = 0;
-  while(args[i] != NULL){
-    printf("%s[%d] = %s\n", name, i, args[i]);
-    //printf("Equal to null: %d\n", args[])
-    i++;
+void print_account_ids(int *list, int n){
+  int i;
+  printf("[ ");
+  for(i = 0; i < n-1; i++){
+    printf("%d, ", list[i]);
   }
-  printf("-------Done--------\n");
+  printf("%d ]\n", list[i]);
+
 }
 
-int main(int argc, char **argv){
-  int c = 0;
-  
-  char *args1[] = {"check", "1"};
-  char *args2[] = {"trans", "2", "20", "3"};
-  char *args3[] = {"check", "4"};
-  char *args4[] = {"trans", "5", "-20"};
-  
-  request_input(args1, ++c);
-  request_input(args2, ++c);
-  request_input(args3, ++c);
-  request_input(args4, ++c);
-  
-  //printf("request inputs\n");
-  
-  print_list2();
-
-  return 0;
+void print_account_requests(int size){
+  int i;
+  printf("[ ");
+  for(i = 0; i < size - 1; i++){
+    printf("%d, ", account_list[i]->request);
+  }
+  printf("%d ]\n", account_list[i]->request);
 }
+
+void print_nodes(node *n){
+  node *temp = n;
+  printf("( ");
+  while(temp->next != NULL){
+    printf("%d, ", temp->request_id);
+    temp = temp->next;
+  }
+  printf("%d )\n", temp->request_id);
+}
+
+
