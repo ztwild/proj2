@@ -1,10 +1,11 @@
 #include <time.h>
 #include <sys/time.h>
+
 #include "utils.c"
 #include "Bank.c"
 #include "account.c"
 #include "node.c"
-#include "test.c"
+
 
 ///  File  ///
 FILE *file;
@@ -92,10 +93,9 @@ char *process_check(node *n){
   gettimeofday(&end, NULL);
   sprintf(str, "%d BAL %d TIME %d.%06d %d.%06d\n", n->request_id, amount,
     start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
-  // sprintf(str, "%d BAL %d TIME %d.%06d\n", r, am,
-  //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
-  
-  free(n);
+  //sprintf(str, "%d BAL %d TIME %d.%06d\n", n->request_id, amount,
+  //  end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+
   return str;
 }
 
@@ -107,7 +107,6 @@ char *process_trans(node *n){
   int *tran_list = malloc(sizeof(int) * 10);
   int x = -1, loop = 1, valid = 1, index = 0;
   int r = n->request_id;
-  print_nodes(n);
   
   
   while(n != NULL){
@@ -116,36 +115,35 @@ char *process_trans(node *n){
     
     if(n->account_id > 0 && n->account_id <= bank_size){
       tran_list[index] = account_list[n->account_id - 1]->value + n->amount;
-      account_list[n->account_id - 1]->request = r;
-      //tran_list[index] = read_account(n->account_id) + n->amount;
+      account_list[n->account_id - 1]->request = n->request_id;
       valid &= tran_list[index] >= 0;
     }
     x = valid || x > -1 ? x : index;
     loop = n->next != NULL;
     index++;
-    node *temp = n->next;
     n = n->next;
-    free(temp);
   }
   
   if(valid){
     for(x = 0; x < index; x++){
-      write_account(id_list[x], tran_list[x]);
+      int account_num = id_list[x];
+      int new_amount = tran_list[x];
+      account_list[account_num - 1]->value = new_amount;
+      write_account(account_num, new_amount);
     }
     gettimeofday(&end, NULL);
     sprintf(str, "%d OK TIME %d.%06d %d.%06d\n", r, 
-    //fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r, 
       start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
-    // sprintf(str, "%d OK TIME %d.%06d\n", r, 
-    //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+    //sprintf(str, "%d OK TIME %d.%06d\n", r, 
+      //end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
   }
   else{
     int account = id_list[x];
     gettimeofday(&end, NULL);
     sprintf(str, "%d ISF %d TIME %d.%06d %d.%06d\n", r, account, 
       start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
-    // sprintf(str, "%d ISF %d TIME %d.%06d\n", r, ac, 
-    //   end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+    //sprintf(str, "%d ISF %d TIME %d.%06d\n", r, account, 
+      //end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
   }
   free(id_list);
   free(tran_list);

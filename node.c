@@ -123,3 +123,11 @@ void print_list2(){
   }
 }
 
+void free_nodes(node *n){
+  while(n != NULL){
+    node *temp = n->next;
+    free(n);
+    n = temp;
+  }
+}
+

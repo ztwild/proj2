@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-///**
 #include <time.h>
 #include <sys/time.h>
 #include <pthread.h>
-//**/
 
 #include "line.c"
 #include "worker.c"
@@ -68,6 +66,24 @@ void run(int argc, char **argv){
       print_list();
     
     }
+    else if(equals(args[0], "chk")){
+      int i;
+      printf("[ ");
+      for(i = 0; i < bank_size-1; i++){
+        printf("%d, ", account_list[i]->request);
+      }
+      printf("%d ]\n", account_list[i]->request);
+      
+    }
+    else if(equals(args[0], "amt")){
+      int i;
+      printf("[ ");
+      for(i = 0; i < bank_size-1; i++){
+        printf("%d, ", account_list[i]->value);
+      }
+      printf("%d ]\n", account_list[i]->value);
+      
+    }
     else if(validate(args)){
       request_count++;
       int account, amount;
@@ -90,7 +106,7 @@ void run(int argc, char **argv){
         pthread_create(&request_tid, NULL, (void*)&request, (void*)w);
       }
       printf("ID %d\n", request_count);
-      usleep(200); // for testing, so it doesn't print the worker threads after 
+      //usleep(10000); // for testing, so it doesn't print the worker threads after 
     }
     else{
       printf("Invalid Input\n");
@@ -98,7 +114,6 @@ void run(int argc, char **argv){
     
     free(line);
     free(args);
-    //printf("Freed lines and args\n");
   }
 }
 
@@ -116,27 +131,25 @@ void *request(void *input){  //Main thread creates new thread to queue next requ
     int account = w->account;
     int amount = w->amount;
     int count = w->count;
-    //printf("(%d)[account: %d, amount: %d]\n", count, account, amount);
     
     enqueue(type, account, amount, count);
     worker *temp = w;
     w = w->next;
     free(temp);
   }
-  free(w);
   
   pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
   pthread_cond_broadcast(&process_cv);  //Then the process
   
   inprocess--;
   pthread_mutex_unlock(&mutex);
-  //printf("request submitted\n");
   return ;
 }
 
 
 void *process(void* arg){  //Process/worker threads function
   
+  //sleep(20);
 //////////  Request queue  //////////
   int num = *((int*)arg);
   while(1){
@@ -159,10 +172,6 @@ void *process(void* arg){  //Process/worker threads function
     int *priority = get_request_priority(account_ids, length);
     set_request_priority(account_ids, length, n->request_id);
     
-    //print_account_ids(priority, bank_size);
-    //print_account_ids(request_priority, bank_size);
-    free(account_ids);
-    
     pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
     pthread_cond_broadcast(&process_cv);  //Then the process
   
@@ -173,33 +182,29 @@ void *process(void* arg){  //Process/worker threads function
 //////////  Accounts  //////////
     
     lock_accounts(account_ids, length);
-    //printf("(%d) waiting for accounts\n", num);
     i = isrequest_finished(priority);
-    //printf("is request finished? i = %d\n", i);
     while(i >= 0){
       pthread_mutex_t mutex_account = account_list[i]->mutex;
       pthread_cond_wait(&account_cv, &mutex_account);
       i = isrequest_finished(priority);
-      //printf("is request finished? i = %d\n", i);
     }
     
     char *str = process_next(n);
     free(priority);
 
+    free_nodes(n);
+    
     request_ready++;
-    print_account_requests(bank_size);
     unlock_accounts(account_ids, length);
     free(account_ids);
-    //printf("(%d) processed accounts\n", num);
     
 //////////  Write to File  //////////    
-    //printf("(%d) waiting for file\n", num);
+
     flockfile(file);
-    
     fprintf(file, "%s", str);
     free(str);
     funlockfile(file);
-    //printf("(%d) printed to file\n", num);
+    
   }
   
   return ;

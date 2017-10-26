@@ -78,10 +78,10 @@ void process_next(){
     am = n->amount;
     am = read_account(ac);
     gettimeofday(&end, NULL);
-    //fprintf(file, "%d BAL %d TIME %d.%06d %d.%06d\n", r, am,
-      //n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
-    fprintf(file, "%d BAL %d TIME %d.%06d\n", r, am,
-      end.tv_sec - n->start.tv_sec, end.tv_usec - n->start.tv_usec);
+    fprintf(file, "%d BAL %d TIME %d.%06d %d.%06d\n", r, am,
+      n->start.tv_sec, n->start.tv_usec, end.tv_sec, end.tv_usec);
+    //fprintf(file, "%d BAL %d TIME %d.%06d\n", r, am,
+      //end.tv_sec - n->start.tv_sec, end.tv_usec - n->start.tv_usec);
     free(n);
   }
   else{
@@ -114,18 +114,18 @@ void process_next(){
       }
       gettimeofday(&end, NULL);
       
-      //fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r,  
-        //start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
-      fprintf(file, "%d OK TIME %d.%06d\n", r,  
-        end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+      fprintf(file, "%d OK TIME %d.%06d %d.%06d\n", r,  
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
+      //fprintf(file, "%d OK TIME %d.%06d\n", r,  
+        //end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
     }
     else{
       ac = id_list[x];
       gettimeofday(&end, NULL);
-      //fprintf(file, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
-        //start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
-      fprintf(file, "%d ISF %d TIME %d.%06d\n", r, ac, 
-        end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
+      fprintf(file, "%d ISF %d TIME %d.%06d %d.%06d\n", r, ac, 
+        start.tv_sec, start.tv_usec, end.tv_sec, end.tv_usec);
+      //fprintf(file, "%d ISF %d TIME %d.%06d\n", r, ac, 
+        //end.tv_sec - start.tv_sec, end.tv_usec - start.tv_usec);
     }
     free(id_list);
     free(tran_list);

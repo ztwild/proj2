@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <pthread.h>
 
+///// Testing /////
+void print_account_requests(int size);
+void print_account_ids(int *list, int n);
+///// Testing /////
+
 typedef struct account{
   pthread_mutex_t mutex;
   int value;
@@ -58,10 +63,16 @@ void set_request_priority(int *list, int n, int count){
 
 
 int isrequest_finished(int *priority){
+  /**
+  printf("Priority list->");
+  print_account_ids(priority, size);
+  printf("Accounts processed->");
+  print_account_requests(size);
+  **/
   int i;
   for(i = 0; i < size; i++){
     int r = account_list[i]->request;
-    if(r > 0 && priority[i] != r){
+    if(priority[i] > 0 && priority[i] != r){
       return i;
     }
   }
@@ -90,3 +101,26 @@ void account_waiting(int *list, int size){
     pthread_cond_wait(&account_cv, &account_list[i]->mutex);
   }
 }
+
+//////// Testing ////////
+void print_account_requests(int size){
+  int i;
+  printf("[ ");
+  for(i = 0; i < size - 1; i++){
+    printf("%d, ", account_list[i]->request);
+  }
+  printf("%d ]\n", account_list[i]->request);
+}
+
+void print_account_ids(int *list, int n){
+  int i;
+  printf("[ ");
+  for(i = 0; i < n-1; i++){
+    printf("%d, ", list[i]);
+  }
+  printf("%d ]\n", list[i]);
+
+}
+
+
+
