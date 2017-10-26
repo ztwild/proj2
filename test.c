@@ -1,30 +1,37 @@
-void print_account_ids(int *list, int n){
-  int i;
-  printf("[ ");
-  for(i = 0; i < n-1; i++){
-    printf("%d, ", list[i]);
-  }
-  printf("%d ]\n", list[i]);
+#include <signal.h>
+#include <stdio.h>
+#include <windows.h>
 
+/////// 3.1 ///////
+/**
+void my_routine( );
+int main( ) {
+  signal(SIGINT, my_routine);
+  printf("Entering infinite loop\n");
+  while(1) {
+    Sleep(10);
+  } // take an infinite number of naps
+  printf("Can’t get here\n");
+}
+  // will be called asynchronously, even during a sleep
+
+void my_routine( ) {
+  printf("Running my_routine\n");
+}
+**/
+
+/////// 3.2 ///////
+void my_routine( );
+int main() {
+  signal(SIGINT, my_routine);
+  signal(sigQUIT, my_routine);
+  printf("Entering infinite loop\n");
+  while(1) { 
+    Sleep(10); 
+  }
+  printf("Can’t get here\n");
 }
 
-void print_account_requests(int size){
-  int i;
-  printf("[ ");
-  for(i = 0; i < size - 1; i++){
-    printf("%d, ", account_list[i]->request);
-  }
-  printf("%d ]\n", account_list[i]->request);
+void my_routine(int signo) {
+  printf("The signal number is %d.\n", signo);
 }
-
-void print_nodes(node *n){
-  node *temp = n;
-  printf("( ");
-  while(temp->next != NULL){
-    printf("%d, ", temp->request_id);
-    temp = temp->next;
-  }
-  printf("%d )\n", temp->request_id);
-}
-
-
