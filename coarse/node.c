@@ -42,7 +42,6 @@ void enqueue(int type, int account, int amount, int count){
     }
     p->next = temp;
   }
-  //num_of_requests = rid;
 }
 
 node *dequeue(){

@@ -2,17 +2,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-///**
 #include <time.h>
 #include <sys/time.h>
 #include <pthread.h>
-//**/
 
 #include "line.c"
 #include "worker.c"
 
 pthread_mutex_t mutex;
-pthread_mutex_t *mutex_list;
 pthread_cond_t  request_cv;
 pthread_cond_t  process_cv;
 
@@ -34,8 +31,6 @@ void run(int argc, char **argv){
   
   pthread_t request_tid;
   pthread_t process_tid[num_workers];
-  pthread_mutex_t list[num_accounts];
-  mutex_list = list;
   
   //// Initialize Settings ////
   initialize_accounts(num_accounts);
@@ -89,7 +84,6 @@ void run(int argc, char **argv){
         pthread_create(&request_tid, NULL, (void*)&request, (void*)w);
       }
       printf("ID %d\n", request_count);
-      usleep(50); // for testing, so it doesn't print the worker threads after 
     }
     else{
       printf("Invalid Input\n");
@@ -97,7 +91,6 @@ void run(int argc, char **argv){
     
     free(line);
     free(args);
-    //printf("Freed lines and args\n");
   }
 }
 
@@ -115,7 +108,6 @@ void *request(void *input){
     int account = w->account;
     int amount = w->amount;
     int count = w->count;
-    //printf("(%d)[account: %d, amount: %d]\n", count, account, amount);
     
     enqueue(type, account, amount, count);
     worker *temp = w;
@@ -129,7 +121,6 @@ void *request(void *input){
   
   inprocess--;
   pthread_mutex_unlock(&mutex);
-  //printf("request submitted\n");
   return ;
 }
 
@@ -147,8 +138,7 @@ void *process(void* arg){
   
     pthread_cond_broadcast(&request_cv);  //Gives priorety to the request
     pthread_cond_broadcast(&process_cv);  //Then the process
-  
-    //num += bank_size;
+
     inprocess--;
     pthread_mutex_unlock(&mutex);
   }
